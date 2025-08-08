@@ -4,31 +4,20 @@ import { QdrantVectorStore } from '@langchain/qdrant';
 import { Document } from '@langchain/core/documents';
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import { CharacterTextSplitter } from '@langchain/textsplitters';
-
 const worker = new Worker(
   'file-upload-queue',
   async (job) => {
     console.log(`Job:`, job.data);
     const data = JSON.parse(job.data);
-    /*
-    Path: data.path
-    read the pdf from path,
-    chunk the pdf,
-    call the openai embedding model for every chunk,
-    store the chunk in qdrant db
-    */
+   
 
-    // Load the PDF
     const loader = new PDFLoader(data.path);
     const docs = await loader.load();
-
     const embeddings = new OpenAIEmbeddings({
       model: 'text-embedding-3-small',
-      apiKey: 
-      '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',
+      apiKey: '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',
     });
-
-    const vectorStore = await QdrantVectorStore.fromExistingCollection(
+  const vectorStore = await QdrantVectorStore.fromExistingCollection(
       embeddings,
       {
         url: 'http://localhost:6333',
@@ -38,11 +27,12 @@ const worker = new Worker(
     await vectorStore.addDocuments(docs);
     console.log(`All docs are added to vector store`);
   },
+    
   {
-    concurrency: 100,
+    concurrency: 100 ,
     connection: {
-      host: 'localhost',
-      port: '6379',
-    },
+    host: 'localhost',
+    port: '6379',
+  },
   }
 );
